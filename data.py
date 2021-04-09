@@ -1,5 +1,7 @@
 import pandas as pd
 
-df = pd.read_csv('https://plotly.github.io/datasets/country_indicators.csv')
+df = pd.read_csv('population.csv')
 
-available_indicators = df['Indicator Name'].unique()
+countries = df['Entity'].unique().tolist()
+min_year = int(df['Year'].unique().min())
+max_year = int(df['Year'].unique().max())
