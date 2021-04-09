@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 import plotly.express as px
 import pandas as pd
 
@@ -25,14 +26,23 @@ app.layout = html.Div([
 
 @app.callback(
     Output('time-series-graph', 'figure'),
-    [Input('year-selector', 'value'),
+    [Input('min-year-selector', 'value'),
+     Input('max-year-selector', 'value'),
      Input('country-selector', 'value')])
-def update_graph(year_value, countries):
+def update_graph(min_year_value, max_year_value, countries):
 
-    dff = df[df['Year'] <= year_value]
+    # Prevents errors when an input is blank
+    if not min_year_value or not max_year_value or not countries:
+        raise PreventUpdate
+
+    dff = df
+
+    # Apply filters based on side options
+    dff = dff[dff['Year'] <= max_year_value]
+    dff = dff[dff['Year'] >= min_year_value]
+
     if type(countries) is not list:
         countries = [countries]
-
     dff = dff[dff['Entity'].isin(countries)]
 
     fig = px.line(
