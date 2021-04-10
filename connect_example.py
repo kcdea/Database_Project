@@ -4,7 +4,7 @@ import os
 
 # Before this works, you need to unzip instantclient_19_8.zip.
 
-cx_Oracle.init_oracle_client(lib_dir=os.environ.get("HOME")+"/Downloads/instantclient_19_8")
+cx_Oracle.init_oracle_client(lib_dir="./../instantclient_19_10")
 
 connection = cx_Oracle.connect(
         user = config.username,

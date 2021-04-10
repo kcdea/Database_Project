@@ -13,6 +13,7 @@ from graph_page import graph_page
 from info_page import info_page
 from complex_query_page import complex_query_page
 from navbar import navbar
+from query import query
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA])
 
@@ -53,6 +54,22 @@ def update_graph(min_year_value, max_year_value, countries):
         hover_name=dff['Entity'])
 
     fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+
+    return fig
+
+
+@app.callback(
+    Output('real-data-graph', 'figure'),
+    [Input('currency-selector', 'value')])
+def test_graph(currency):
+    my_query = 'SELECT DATE_TXT, CLOSE FROM DMIX.{} ORDER BY DATE_TXT ASC'.format(currency)
+    column_headers = ['Time', 'Close Price']
+    dff = query(my_query, column_headers)
+
+    fig = px.line(
+        data_frame=dff,
+        x=dff['Time'],
+        y=dff['Close Price'])
 
     return fig
 

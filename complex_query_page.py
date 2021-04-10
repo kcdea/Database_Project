@@ -11,7 +11,12 @@ nav = navbar()
 def complex_query_page():
     page = html.Div([
         nav,
-        html.P('This is where the complex queries will be, whatever that means....')
+        dcc.Graph(id='real-data-graph'),
+        dcc.Dropdown(
+            id='currency-selector',
+            options=[{'label': i, 'value': i} for i in ['BTC2', 'DASH', 'ETC', 'ETH', 'OMG', 'LTC', 'NEO', 'XMR']],
+            value='BTC2'
+        )
     ])
     return page
 
