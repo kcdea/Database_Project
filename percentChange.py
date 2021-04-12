@@ -1,31 +1,82 @@
 import datetime
 from dateToTimestamp import dateToTimestamp
 from query import query
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import data
 
-def percentChange(currencies, startDate = datetime.date.min, endDate = datetime.date.max):
+from navbar import navbar
+
+
+def percentChange(currencies, startDate=datetime.date.min, endDate=datetime.date.max):
     start = dateToTimestamp(startDate)
     end = dateToTimestamp(endDate)
-    
-    queryStr = 'SELECT {0}.DATE_TXT, '.format(currencies[0])
+
+    queryStr = 'SELECT DMIX.{0}.DATE_TXT, '.format(currencies[0])
     position = 0
     while position < len(currencies):
         if position != 0:
             queryStr = queryStr + ', '
-        queryStr = queryStr + '(({0}.CLOSE - {0}.OPEN) / {0}.OPEN)'.format(currencies[position])
+        queryStr = queryStr + '((DMIX.{0}.CLOSE - DMIX.{0}.OPEN) / DMIX.{0}.OPEN)'.format(currencies[position])
         position = position + 1;
     position = 0
     queryStr = queryStr + ' FROM '
     while position < len(currencies):
         if position == 0:
-            queryStr = queryStr + currencies[position]
+            queryStr = queryStr + "DMIX." + currencies[position]
         else:
-            queryStr = queryStr + ' INNER JOIN {1} ON {0}.DATE_TXT = {1}.DATE_TXT'.format(currencies[0], currencies[position])
+            queryStr = queryStr + ' INNER JOIN DMIX.{1} ON DMIX.{0}.DATE_TXT = DMIX.{1}.DATE_TXT'.format(currencies[0],
+                                                                                                         currencies[
+                                                                                                             position])
         position = position + 1
-    queryStr = queryStr + ' WHERE {0}.TIMESTAMP >= {1} AND {0}.TIMESTAMP <= {2}'.format(currencies[0], start, end)
+    queryStr = queryStr + ' WHERE DMIX.{0}.TIMESTAMP >= {1} AND DMIX.{0}.TIMESTAMP <= {2}'.format(currencies[0], start,
+                                                                                                  end)
     for currency in currencies:
-        queryStr = queryStr + ' AND {0}.OPEN > 0'.format(currency)
-    queryStr = queryStr + ' ORDER BY {0}.DATE_TXT ASC'.format(currencies[0])
-    
+        queryStr = queryStr + ' AND DMIX.{0}.OPEN > 0'.format(currency)
+    queryStr = queryStr + ' ORDER BY DMIX.{0}.DATE_TXT ASC'.format(currencies[0])
+
     headers = currencies
     headers.insert(0, "datetime")
     return query(queryStr, headers)
+
+
+def percentChangePage():
+    layout = html.Div([
+        navbar(),
+        html.Div([
+            html.H6('Currencies'),
+            dcc.Dropdown(
+                id='percent-change-currencies',
+                options=[{'label': i, 'value': i} for i in data.CURRENCIES],
+                value=['BTC', 'DASH'],
+                multi=True
+            ),
+            html.Div([
+                html.Div([
+                    html.H6('Start Date:'),
+                    dcc.DatePickerSingle(
+                        id='percent-change-start',
+                        min_date_allowed=data.MIN_DATE,
+                        max_date_allowed=data.MAX_DATE,
+                        date=data.MIN_DATE
+                    )],
+                    style={'display': 'inline-block'}),
+                html.Div([
+                    html.H6('End Date:'),
+                    dcc.DatePickerSingle(
+                        id='percent-change-end',
+                        min_date_allowed=data.MIN_DATE,
+                        max_date_allowed=data.MAX_DATE,
+                        date=data.MAX_DATE
+                    )],
+                    style={'display': 'inline-block'}),
+            ])],
+            style={'display': 'inline-block', 'width': '25%'}),
+        html.Div([
+            dcc.Graph(id='percent-change-graph')
+        ],
+            style={'display': 'inline-block', 'width': '70%'})
+    ])
+    return layout
+

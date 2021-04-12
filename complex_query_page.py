@@ -14,8 +14,8 @@ def complex_query_page():
         dcc.Graph(id='real-data-graph'),
         dcc.Dropdown(
             id='currency-selector',
-            options=[{'label': i, 'value': i} for i in ['BTC2', 'DASH', 'ETC', 'ETH', 'OMG', 'LTC', 'NEO', 'XMR']],
-            value='BTC2'
+            options=[{'label': i, 'value': i} for i in ['BTC', 'DASH', 'ETC', 'ETH', 'OMG', 'LTC', 'NEO', 'XMR']],
+            value='BTC'
         )
     ])
     return page
