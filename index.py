@@ -35,28 +35,27 @@ def currency_stability(currencies, countries, start_date, end_date):
         raise PreventUpdate
     if type(currencies) is not list:
         currencies = [currencies]
-    if type(countries) is not list:
-        countries = [countries]
+
+    countries = [countries]
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
     dff = coinVSInstability(currencies.copy(), countries.copy(), start_date, end_date)
 
-    print(dff)
-
-    points = currencies + countries
     fig = go.Figure()
-    for i in points:
+    for i in currencies:
         fig.add_trace(go.Scatter(
-            x=dff['month'],
+            x=dff[countries[0]],
             y=dff[i],
             name=i,
+            text=dff['month'],
+            hovertemplate='%{text}',
             mode='markers'
         ))
 
     fig.update_layout(
-        xaxis={'title': 'Date'},
-        yaxis={'title': 'Volatility and Price Relationship'}
+        xaxis={'title': 'Instability Score'},
+        yaxis={'title': 'Price'}
     )
 
     return fig

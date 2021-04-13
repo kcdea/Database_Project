@@ -14,8 +14,7 @@ def currency_stability_page():
             dcc.Dropdown(
                 id='currency-stability-countries',
                 options=[{'label': i, 'value': i} for i in data.COUNTRIES],
-                value=['US', 'CHINA'],
-                multi=True
+                value='US'
             ),
             html.H6('Crypto-Currencies:'),
             dcc.Dropdown(
