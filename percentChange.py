@@ -9,7 +9,7 @@ import data
 from navbar import navbar
 
 
-def percentChange(currencies, startDate=datetime.date.min, endDate=datetime.date.max):
+def percentChange(currencies, startDate=datetime.date(2012, 1, 1), endDate=datetime.date.today()):
     start = dateToTimestamp(startDate)
     end = dateToTimestamp(endDate)
 
