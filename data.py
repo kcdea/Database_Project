@@ -1,11 +1,4 @@
-import pandas as pd
 import datetime
-
-df = pd.read_csv('population.csv')
-
-countries = df['Entity'].unique().tolist()
-min_year = int(df['Year'].unique().min())
-max_year = int(df['Year'].unique().max())
 
 # Limits of the data
 
