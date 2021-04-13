@@ -45,7 +45,7 @@ def percentChangePage():
     layout = html.Div([
         navbar(),
         html.Div([
-            html.H6('Currencies'),
+            html.H6('Crypto-Currencies:'),
             dcc.Dropdown(
                 id='percent-change-currencies',
                 options=[{'label': i, 'value': i} for i in data.CURRENCIES],
@@ -59,7 +59,7 @@ def percentChangePage():
                         id='percent-change-start',
                         min_date_allowed=data.MIN_DATE,
                         max_date_allowed=data.MAX_DATE,
-                        date=data.MIN_DATE
+                        date=data.DEFAULT_DATE
                     )],
                     style={'display': 'inline-block'}),
                 html.Div([
