@@ -87,6 +87,10 @@ def volatility_page():
                     md=4),
             dbc.Col([
                 dcc.Graph(id='volatility-graph'),
+            ])
+        ]),
+        dbc.Row([
+            html.Div([
                 html.P(
                     """\
                     This page demonstrates the distinction between various methods of calculating the standard deviation of a cryptocurrency, as well as the ability of said methods to demonstrate the volatility of said cryptocurrency.\n
@@ -99,7 +103,8 @@ def volatility_page():
                     The two lines surrounding the first standard deviations are the second standard deviations. It can be assumed that there is a 95.3% chance for the following price point to fall within this range. \n
                     Key concepts covered for this query included the use of the Oracle SQL "OVER" clause to generate running averages, the use of the SQL "STDDEV" command to determine the standard deviation of a given data set, and combination of these results to generate appropriate statistical ranges for the data."""
                 )
-            ])
+            ],
+            style = {'margin-left' : '30px', 'margin-right' : '30px'})
         ])
     ])
     return layout

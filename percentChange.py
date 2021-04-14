@@ -88,6 +88,27 @@ def percentChangePage():
                             style={'display': 'inline-block'})])],
                     md=4),
             dbc.Col([dcc.Graph(id='percent-change-graph')])
+        ]),
+        dbc.Row([
+            html.Div([
+                html.P("""
+                    This page demonstrates the correlation, or lack thereof, between the price shifts of two cryptocurrencies.
+                    Due to the nature of cryptocurrency as a collective platform without merit-based backing for its value,
+                    changes in the price of one coin have been anecdotally known to create changes in the price of others. For instance,
+                    Ethereum (ETH) and Bitcoin (BTC) are both built upon the Ethereum blockchain, meaning price changes of one modify the
+                    amount of money in circulation in the blockchain, resulting in changes in the value of both currencies.
+                    The graph shown above attempts to visualize this trend by showcasing the percent change in price for each hour of a currency's
+                    data relative to that of another. The percent change in price is calculated internally for each row of data by finding the difference
+                    between the closing and opening price of the currency in the given hour and dividing that by the opening price.
+                    The degree to which changes in the price of two cryptocurrencies correlate can be visualized by how similar the data is to a line y = ax.
+                    As an example, selecting the same currency twice places the data points along the line x=y, as the relationship between a currency's
+                    percentage price changes and themselves is one-to-one. The more a relationship between two currencies deviates from this standard, outliers notwithstanding, the less
+                    correlated their price shifts can be considered to be.
+                    Hovering over a given data point will provide information on when it was collected, allowing for easier consideration of outliers and what may have caused them.
+                    Key concepts covered for this query included the use of row-internal data calculations to determine overall trends in a data set and the comparison of two sets relative to each other in the same visualization.
+                """)
+            ],
+            style = {'margin-left' : '30px', 'margin-right' : '30px'})
         ])
     ])
     return layout

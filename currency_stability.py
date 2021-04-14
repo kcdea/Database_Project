@@ -46,13 +46,24 @@ def currency_stability_page():
                     md=4),
             dbc.Col([
                 dcc.Graph(id='currency-stability-graph'),
-                html.P("""This page demonstrates the correlation, or lack thereof, between various cryptocurrencies and the economic stability of various countries.
-                Displayed on the x-axis is a scale which is used to quantify the perceived economic instability of the selected country. This index was historically collected monthly and considers a number of factors, namely the mention of terms which indicate economically unstable conditions pertaining to economically unstable conditions in a number of prominent journalistic publications.
-                For further details regarding this index, please consult the data source (https://www.policyuncertainty.com/all_country_data.html) and its associated materials. All economic uncertaintly data utilized is derived from the sources listed therein, unless otherwise specified.
-                Meanwhile, the Y axis displays the average price of the selected cryptocurrencies for the given month. These averages are calculated individually for the specified months combined into a single table that is then returned to the graph.
-                The final result of this graph is a visualization of the relative correlation between a given country's economic instability and the prices of the selected cryptocurrencies. Each data point is graphed independently to demonstrate correlational rather than time-dependent trends.
-                Key concepts covered for this query included use of the SQL "WITH", "AVG", AND "UNION" statements to create a table of monthly average values for the selected cryptocurrencies.""")
             ])
+        ]),
+        dbc.Row([
+            html.Div([
+                html.P(
+                    """\
+                    This page demonstrates the distinction between various methods of calculating the standard deviation of a cryptocurrency, as well as the ability of said methods to demonstrate the volatility of said cryptocurrency.\n
+                    Historically, stock traders have used the standard deviation of a stock's price in a preceding timeframe as a means of determining its "volatility", which is best defined as its range of probable price shifts in an upcoming market segment. 
+                    Cryptocurrencies, like stocks, are also investments, and are often referred to as some of the most volatile investments traders can place their money in. Of course, as with any investment, high risks can yield high rewards, but awareness of these risks is critical to making an informed decision. \n
+                    The graph shown above is able to make use of one of two running averages to demonstrate the standard deviation's ability to predict price shifts. In "All time" mode, a running average of all data within the specified range is used to determine the standard deviation at a given point. This prevents significant changes in predictions from occurring due to price spikes, but can become wildly inaccurate over long intervals.
+                    "Last 12 hours" mode, on the other hand, utilizes a running average of the 12 hours of data preceding a given data point to determine the standard deviation. This allows the standard deviation to "forget" past trends to enable more accurate short-term predictions. However, this can result in gross overestimations of future value during moments of extreme volatility. \n
+                    Regardless of which mode is chosen, the graph displays six lines over the selected time interval. The most jagged and erratic of these is the actual price graph of the currency, similarly to that shown on this website's homepage. Surrounding it are five lines, four of which appear to nearly mirror about a centerline. The "centerline" is the running average for the selected mode at a given data points.
+                    Above and below this average are the first standard deviations from the mean. Due to the mathematical properties of standard deviation calculations and limitations of reliance on historical data, it can be assumed that there is a 68.1% chance for the following price point to fall within this range. \n
+                    The two lines surrounding the first standard deviations are the second standard deviations. It can be assumed that there is a 95.3% chance for the following price point to fall within this range. \n
+                    Key concepts covered for this query included the use of the Oracle SQL "OVER" clause to generate running averages, the use of the SQL "STDDEV" command to determine the standard deviation of a given data set, and combination of these results to generate appropriate statistical ranges for the data."""
+                )
+            ],
+            style = {'margin-left' : '30px', 'margin-right' : '30px'})
         ])
     ])
     return layout
