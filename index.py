@@ -102,8 +102,12 @@ def volatility_disp(currency, start_date, end_date, option, height):
     Output('currency-coef-graph-1', 'figure'),
     Output('currency-coef-graph-2', 'figure'),
     [Input('currency-coef-currency1', 'value'),
-     Input('currency-coef-currency2', 'value')])
-def currency_coefficient(c1, c2):
+     Input('currency-coef-currency2', 'value'),
+     Input('start', 'date'),
+     Input('end', 'date')])
+def currency_coefficient(c1, c2, coefStart, coefEnd):
+    coefStart = datetime.datetime.strptime(coefStart, '%Y-%m-%d').date()
+    coefEnd = datetime.datetime.strptime(coefEnd, '%Y-%m-%d').date()
     if not c1 or not c2:
         raise PreventUpdate
 
@@ -111,19 +115,30 @@ def currency_coefficient(c1, c2):
     if c2 in data.CURRENCIES:
         both_crypto = True
 
-    dff = correlationCoef(c1, c2, both_crypto)
+    dff = correlationCoef(c1, c2, both_crypto, coefStart, coefEnd)
     result = 'Correlation Coefficient: {}'.format(dff['CorrelationCoefficient'][0])
 
-    dff_1 = query("SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} "
-                  "WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1 ORDER BY DMIX.{0}.DATE_TXT ASC".format(c1),
-                  ['Date', 'Price'])
-
+    dff_1_query = "SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1".format(c1)
+    dff_1_query = dff_1_query + " AND DMIX." + c1 + ".DATE_TXT >= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefStart.month).rjust(2, '0'), str(coefStart.day).rjust(2, '0'), str(coefStart.year).rjust(4, '0'))
+    dff_1_query = dff_1_query + " AND DMIX." + c1 + ".DATE_TXT <= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefEnd.month).rjust(2, '0'), str(coefEnd.day).rjust(2, '0'), str(coefEnd.year).rjust(4, '0'))
+    dff_1_query = dff_1_query + " ORDER BY DMIX.{0}.DATE_TXT ASC".format(c1)
+    dff_1 = query(dff_1_query, ['Date', 'Price'])
+    
+    
+    
     if both_crypto:
-        dff_2 = query("SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} "
-                      "WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1 ORDER BY DMIX.{0}.DATE_TXT ASC".format(c2),
-                      ['Date', 'Price'])
+        dff_2_query = "SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} ".format(c2)
+        dff_2_query = dff_2_query + "WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1".format(c2)
+        dff_2_query = dff_2_query + " AND DMIX." + c2 + ".DATE_TXT >= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefStart.month).rjust(2, '0'), str(coefStart.day).rjust(2, '0'), str(coefStart.year).rjust(4, '0'))
+        dff_2_query = dff_2_query + " AND DMIX." + c2 + ".DATE_TXT <= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefEnd.month).rjust(2, '0'), str(coefEnd.day).rjust(2, '0'), str(coefEnd.year).rjust(4, '0'))
+        dff_2_query = dff_2_query + " AND TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1 ORDER BY DMIX.{0}.DATE_TXT ASC".format(c2)
+        dff_2 = query(dff_2_query, ['Date', 'Price'])
     else:
-        dff_2 = query('SELECT DATE_TXT, {} FROM DMIX.EXCHANGERATES ORDER BY DATE_TXT ASC'.format(c2), ['Date', 'Price'])
+        dff_2_query = "SELECT DATE_TXT, {} FROM DMIX.EXCHANGERATES".format(c2)
+        dff_2_query = dff_2_query + " WHERE DMIX.EXCHANGERATES.DATE_TXT >= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefStart.month).rjust(2, '0'), str(coefStart.day).rjust(2, '0'), str(coefStart.year).rjust(4, '0'))
+        dff_2_query = dff_2_query + " AND DMIX.EXCHANGERATES.DATE_TXT <= TO_DATE('{0}-{1}-{2}', 'MM-DD-YYYY')".format(str(coefEnd.month).rjust(2, '0'), str(coefEnd.day).rjust(2, '0'), str(coefEnd.year).rjust(4, '0'))
+        dff_2_query = dff_2_query + " ORDER BY DATE_TXT ASC".format(c2)
+        dff_2 = query(dff_2_query, ['Date', 'Price'])
 
     fig_1 = go.Figure(go.Scatter(
         x=dff_1['Date'],

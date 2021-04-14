@@ -51,7 +51,27 @@ def currency_correlation_page():
                     id='currency-coef-currency2',
                     options=[{'label': i, 'value': i} for i in currency_options],
                     value='GBP',
-                )], md=4),
+                ),
+                html.Div([
+                        html.Div([
+                            html.H6('Start Date:'),
+                            dcc.DatePickerSingle(
+                                id='start',
+                                min_date_allowed=data.MIN_DATE,
+                                max_date_allowed=data.MAX_DATE,
+                                date=data.DEFAULT_DATE
+                            )],
+                            style={'display': 'inline-block'}),
+                        html.Div([
+                            html.H6('End Date:'),
+                            dcc.DatePickerSingle(
+                                id='end',
+                                min_date_allowed=data.MIN_DATE,
+                                max_date_allowed=data.MAX_DATE,
+                                date=data.MAX_DATE
+                            )],
+                            style={'display': 'inline-block'})])
+            ], md=4),
             dbc.Col([
                 html.H4(id='coef'),
                 html.H6('Currency 1:'),

@@ -107,8 +107,7 @@ def percentChangePage():
                     Hovering over a given data point will provide information on when it was collected, allowing for easier consideration of outliers and what may have caused them.
                     Key concepts covered for this query included the use of row-internal data calculations to determine overall trends in a data set and the comparison of two sets relative to each other in the same visualization.
                 """)
-            ],
-            style = {'margin-left' : '30px', 'margin-right' : '30px'})
+            ], style = {'margin-left' : '30px', 'margin-right' : '30px'})
         ])
     ])
     return layout
