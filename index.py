@@ -14,6 +14,7 @@ from percentChange import percentChangePage, percentChange
 from currency_stability import currency_stability_page
 from coinVSInstability import coinVSInstability
 from correlation_coef import correlationCoef, currency_correlation_page
+from volatility import volatility_page, volatility
 import data
 from query import query
 
@@ -25,6 +26,53 @@ app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
+
+# @app.callback(
+#     Output('volatility-12-hours-graph', 'style'),
+#     Output('volatility-all-time-graph', 'style'),
+#     Input('toggle', 'value'))
+# def switch_graphs(toggle):
+#     if toggle == 'last 12 hours':
+#         return {'display': 'block'}, {'display': 'none'}
+#     else:
+#         return {'display', 'none'}, {'display', 'block'}
+
+
+@app.callback(
+    Output('volatility-12-hours-graph', 'figure'),
+    Output('volatility-all-time-graph', 'figure'),
+    [Input('volatility-currency', 'value'),
+     Input('volatility-start', 'date'),
+     Input('volatility-end', 'date')])
+def volatility_disp(currency, start_date, end_date):
+    if not currency or not start_date or not end_date:
+        raise PreventUpdate
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+
+    dff = volatility(currency, start_date, end_date)
+
+    print(dff)
+
+    fig_12_hours = go.Figure()
+
+    for i in ["actualPrice", "twelveHour", "twelveHourPlus", "twelveHourMinus", "twelveHourPlusPlus", "twelveHourMinusMinus", ]:
+        fig_12_hours.add_trace(go.Scatter(
+            x=dff['datetime'],
+            y=dff[i],
+            mode='lines'
+        ))
+
+    fig_all_time = go.Figure()
+
+    for i in ["actualPrice", "allTime", "allTimePlus", "allTimeMinus", "allTimePlusPlus", "allTimeMinusMinus"]:
+        fig_all_time.add_trace(go.Scatter(
+            x=dff['datetime'],
+            y=dff[i],
+            mode='lines'
+        ))
+
+    return fig_12_hours, fig_all_time
 
 
 @app.callback(
@@ -44,13 +92,13 @@ def currency_coefficient(c1, c2):
     dff = correlationCoef(c1, c2, both_crypto)
     result = 'Correlation Coefficient: {}'.format(dff['CorrelationCoefficient'][0])
 
-    dff_1 = query("SELECT DATE_TXT, OPEN FROM DMIX.{} "
-                  "WHERE TO_CHAR(DMIX.BTC.DATE_TXT, 'HH24') = 1 ORDER BY DATE_TXT ASC".format(c1),
+    dff_1 = query("SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} "
+                  "WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1 ORDER BY DMIX.{0}.DATE_TXT ASC".format(c1),
                   ['Date', 'Price'])
 
     if both_crypto:
-        dff_2 = query("SELECT DATE_TXT, OPEN FROM DMIX.{} "
-                      "WHERE TO_CHAR(DMIX.BTC.DATE_TXT, 'HH24') = 1 ORDER BY DATE_TXT ASC".format(c2),
+        dff_2 = query("SELECT DMIX.{0}.DATE_TXT, DMIX.{0}.OPEN FROM DMIX.{0} "
+                      "WHERE TO_CHAR(DMIX.{0}.DATE_TXT, 'HH24') = 1 ORDER BY DMIX.{0}.DATE_TXT ASC".format(c2),
                       ['Date', 'Price'])
     else:
         dff_2 = query('SELECT DATE_TXT, {} FROM DMIX.EXCHANGERATES ORDER BY DATE_TXT ASC'.format(c2), ['Date', 'Price'])
@@ -161,6 +209,8 @@ def display_page(pathname):
         return currency_stability_page()
     elif pathname == '/currency_correlation':
         return currency_correlation_page()
+    elif pathname == '/volatility':
+        return volatility_page()
     else:
         return home_page()
 
