@@ -15,6 +15,7 @@ from currency_stability import currency_stability_page
 from coinVSInstability import coinVSInstability
 from correlation_coef import correlationCoef, currency_correlation_page
 from volatility import volatility_page, volatility
+from year_statistics import year_statistics_page, get_stats
 import data
 from query import query
 
@@ -27,15 +28,33 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-# @app.callback(
-#     Output('volatility-12-hours-graph', 'style'),
-#     Output('volatility-all-time-graph', 'style'),
-#     Input('toggle', 'value'))
-# def switch_graphs(toggle):
-#     if toggle == 'last 12 hours':
-#         return {'display': 'block'}, {'display': 'none'}
-#     else:
-#         return {'display', 'none'}, {'display', 'block'}
+
+@app.callback(
+    Output('year-statistics-graph', 'figure'),
+    [Input('year-statistics-currency', 'value'),
+     Input('year-statistics-country', 'value'),
+     Input('year-statistics-year', 'value')])
+def year_statistics(currency, country, year):
+    if not currency or not country or not year:
+        raise PreventUpdate
+    year = year % 1000
+
+    dff = get_stats(country, currency, year)
+
+    fig = go.Figure(go.Scatter(
+        x=dff['Instability'],
+        y=dff['Exchange Rate'],
+        mode='markers',
+        text=dff['Month'],
+        hovertemplate='Month: %{text}'
+    ))
+
+    fig.update_layout(
+        xaxis={'title': 'Economic Instability'},
+        yaxis={'title': 'Exchange Rate'}
+    )
+
+    return fig
 
 
 @app.callback(
@@ -52,24 +71,24 @@ def volatility_disp(currency, start_date, end_date, option):
 
     dff = volatility(currency, start_date, end_date)
 
-    print(dff)
-    print(option)
-
     fig_volatility = go.Figure()
-    
+
     if option == 'last 12 hours':
-        for i in ["actualPrice", "twelveHour", "twelveHourPlus", "twelveHourMinus", "twelveHourPlusPlus", "twelveHourMinusMinus"]:
+        for i in ["actualPrice", "twelveHour", "twelveHourPlus", "twelveHourMinus", "twelveHourPlusPlus",
+                  "twelveHourMinusMinus"]:
             fig_volatility.add_trace(go.Scatter(
                 x=dff['datetime'],
                 y=dff[i],
-                mode='lines'
+                mode='lines',
+                name=i
             ))
     else:
         for i in ["actualPrice", "allTime", "allTimePlus", "allTimeMinus", "allTimePlusPlus", "allTimeMinusMinus"]:
             fig_volatility.add_trace(go.Scatter(
                 x=dff['datetime'],
                 y=dff[i],
-                mode='lines'
+                mode='lines',
+                name=i
             ))
 
     return fig_volatility
@@ -186,7 +205,7 @@ def percent_change(currencies, start_date, end_date):
             x=dff['datetime'],
             y=dff[i],
             mode='lines',
-            name=i
+            name=i,
         ))
 
     fig.update_layout(
@@ -211,6 +230,8 @@ def display_page(pathname):
         return currency_correlation_page()
     elif pathname == '/volatility':
         return volatility_page()
+    elif pathname == '/instability_exchange_rates':
+        return year_statistics_page()
     else:
         return home_page()
 

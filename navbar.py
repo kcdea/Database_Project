@@ -8,6 +8,7 @@ def navbar():
             dbc.NavItem(dbc.NavLink("Currency Stability", href='/currency_stability')),
             dbc.NavItem(dbc.NavLink("Currency Correlation", href='/currency_correlation')),
             dbc.NavItem(dbc.NavLink("Volatility", href="/volatility")),
+            dbc.NavItem(dbc.NavLink('Instability Exchange Rates', href='/instability_exchange_rates')),
             dbc.NavItem(dbc.NavLink("Info Page", href="/info_page"))
         ],
         brand="Home",
