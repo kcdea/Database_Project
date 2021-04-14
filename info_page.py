@@ -16,7 +16,7 @@ def info_page():
         html.H2("Queries:"),
         html.P("Percent Change: Demonstrates the correlation, or lack thereof, between the price shifts of two cryptocurrencies"),
         html.P("Currency Stability: Demonstrates the distinction between various methods of calculating the standard deviation of a cryptocurrency, as well as the ability of said methods to demonstrate the volatility of said cryptocurrency."),
-        html.P("Currency Correlation: Expolres blah"),
+        html.P("Currency Correlation: On this page, a function is given to determine the Pearson correlation coefficient between the price  of a particular cryptocurrency of interest (call this currency1) and the price of either a second cryptocurrency, or some real-world currency (other than the US Dollar, which is used as the standard in our data, and which has already seen to have a strong negative correlation to the price of certain cryptocurrencies, such as Bitcoin https://cointelegraph.com/news/bitcoin-vs-usd-why-only-a-weaker-dollar-will-push-btc-above-20-000)."),
         html.P("Volatility: Demonstrates the distinction between various methods of calculating the standard deviation of a cryptocurrency, as well as the ability of said methods to demonstrate the volatility of said cryptocurrency."),
         html.P("Instability: It finds the economicinstability of a country and it's exchange rate during thea specified year a monthly bases."),
         html.H2("Our Data:"),

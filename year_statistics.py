@@ -48,6 +48,14 @@ def year_statistics_page():
             dbc.Col([
                 dcc.Graph(id='year-statistics-graph')
             ])
+        ]),
+        dbc.Row([
+            html.Div([
+                html.P("""
+                    This query finds the economic instability of a country and its exchange rate during thea specified year a monthly bases by means of aggregate queries. This can subsequently be considered as a baseline for comparisons between shifts in the price of a given crptocurrency and the selected hard currency. This is intended to demonstrate the importance of considering factors beyond simple data when developing a cryptocurrency investment strategy.
+                """)
+            ], style = {'margin-left' : '30px', 'margin-right' : '30px'})
         ])
     ])
     return layout
+
