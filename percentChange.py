@@ -47,7 +47,6 @@ def percentChange(currency1, currency2, startDate=datetime.date(2012, 1, 1), end
     if currency1 == currency2:
         headers[1] = 'Copy of ' + headers[1]
     headers.insert(0, "datetime")
-    print(queryStr)
     return query(queryStr, headers)
 
 
