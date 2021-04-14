@@ -33,12 +33,13 @@ def percentChange(currencies, startDate=datetime.date(2012, 1, 1), endDate=datet
         position = position + 1
     queryStr = queryStr + ' WHERE DMIX.{0}.TIMESTAMP >= {1} AND DMIX.{0}.TIMESTAMP <= {2}'.format(currencies[0], start,
                                                                                                   end)
-    for currency in currencies:
-        queryStr = queryStr + ' AND DMIX.{0}.OPEN > 0'.format(currency)
-    queryStr = queryStr + ' ORDER BY DMIX.{0}.DATE_TXT ASC'.format(currencies[0])
+    queryStr = queryStr + " WHERE {0}.DATE_TXT >= TO_DATE('{1}-{2}-{3}', 'MM-DD-YYYY')".format(currencies[0], str(startDate.month).rjust(2, '0'), str(startDate.day).rjust(2, '0'), str(startDate.year).rjust(4, '0'))
+    queryStr = queryStr + " AND {0}.DATE_TXT <= TO_DATE('{1}-{2}-{3}', 'MM-DD-YYYY')".format(currencies[0], str(endDate.month).rjust(2, '0'), str(endDate.day).rjust(2, '0'), str(endDate.year).rjust(4, '0'))
+    queryStr = queryStr + ' ORDER BY DMIX.{0}.DATE_TXT ASC;'.format(currencies[0])
 
     headers = currencies
     headers.insert(0, "datetime")
+    return queryStr
     return query(queryStr, headers)
 
 
