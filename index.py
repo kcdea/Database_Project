@@ -62,9 +62,10 @@ def year_statistics(currency, country, year):
     [Input('volatility-currency', 'value'),
      Input('volatility-start', 'date'),
      Input('volatility-end', 'date'),
-     Input('toggle', 'value')])
-def volatility_disp(currency, start_date, end_date, option):
-    if not currency or not start_date or not end_date:
+     Input('toggle', 'value'),
+     Input('height', 'value')])
+def volatility_disp(currency, start_date, end_date, option, height):
+    if not currency or not start_date or not end_date or not height:
         raise PreventUpdate
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -90,7 +91,9 @@ def volatility_disp(currency, start_date, end_date, option):
                 mode='lines',
                 name=i
             ))
-
+    
+    fig_volatility.update_layout(height = int(height))
+    
     return fig_volatility
 
 
@@ -209,7 +212,6 @@ def percent_change(currency1, currency2, start_date, end_date):
     fig.add_trace(go.Scatter(
         x=dff[currency1],
         y=dff[currency2Label],
-        #trendline = 'ols',
         name=currency1 + ' vs ' + currency2,
         text = dff['datetime'],
         hovertemplate = '(%{x}, %{y}) @ %{text}',

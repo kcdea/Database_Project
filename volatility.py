@@ -75,6 +75,14 @@ def volatility_page():
                          options=[{'label': i, 'value': i} for i in ['last 12 hours', 'All time']],
                          value='last 12 hours',
                          labelStyle={'display': 'inline-block'}
+                     ),
+                     html.P("Figure height:"),
+                     dcc.Slider(
+                         id = 'height',
+                         min = 500,
+                         max = 1500,
+                         step = 25,
+                         value = 500
                      )],
                     md=4),
             dbc.Col([
