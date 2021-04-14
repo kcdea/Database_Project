@@ -68,7 +68,7 @@ def currency_coefficient(c1, c2):
         xaxis={'title': 'Date'},
         yaxis={'title': 'Price Percent Change'}
     )
-    fig_1.update_layout(
+    fig_2.update_layout(
         xaxis={'title': 'Date'},
         yaxis={'title': 'Price Percent Change'}
     )

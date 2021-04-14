@@ -3,6 +3,7 @@ from dateToTimestamp import dateToTimestamp
 from query import query
 import dash
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import dash_html_components as html
 import data
 
@@ -44,39 +45,35 @@ def percentChange(currencies, startDate=datetime.date(2012, 1, 1), endDate=datet
 def percentChangePage():
     layout = html.Div([
         navbar(),
-        html.Div([
-            html.H6('Crypto-Currencies:'),
-            dcc.Dropdown(
-                id='percent-change-currencies',
-                options=[{'label': i, 'value': i} for i in data.CURRENCIES],
-                value=['BTC', 'DASH'],
-                multi=True
-            ),
-            html.Div([
-                html.Div([
-                    html.H6('Start Date:'),
-                    dcc.DatePickerSingle(
-                        id='percent-change-start',
-                        min_date_allowed=data.MIN_DATE,
-                        max_date_allowed=data.MAX_DATE,
-                        date=data.DEFAULT_DATE
-                    )],
-                    style={'display': 'inline-block'}),
-                html.Div([
-                    html.H6('End Date:'),
-                    dcc.DatePickerSingle(
-                        id='percent-change-end',
-                        min_date_allowed=data.MIN_DATE,
-                        max_date_allowed=data.MAX_DATE,
-                        date=data.MAX_DATE
-                    )],
-                    style={'display': 'inline-block'}),
-            ])],
-            style={'display': 'inline-block', 'width': '25%'}),
-        html.Div([
-            dcc.Graph(id='percent-change-graph')
-        ],
-            style={'display': 'inline-block', 'width': '70%'})
+        dbc.Row([
+            dbc.Col([html.H6('Crypto-Currencies:'),
+                    dcc.Dropdown(
+                        id='percent-change-currencies',
+                        options=[{'label': i, 'value': i} for i in data.CURRENCIES],
+                        value=['BTC', 'DASH'],
+                        multi=True
+                    ),
+                    html.Div([
+                        html.Div([
+                            html.H6('Start Date:'),
+                            dcc.DatePickerSingle(
+                                id='percent-change-start',
+                                min_date_allowed=data.MIN_DATE,
+                                max_date_allowed=data.MAX_DATE,
+                                date=data.DEFAULT_DATE
+                            )],
+                            style={'display': 'inline-block'}),
+                        html.Div([
+                            html.H6('End Date:'),
+                            dcc.DatePickerSingle(
+                                id='percent-change-end',
+                                min_date_allowed=data.MIN_DATE,
+                                max_date_allowed=data.MAX_DATE,
+                                date=data.MAX_DATE
+                            )],
+                            style={'display': 'inline-block'})])],
+                    md=4),
+            dbc.Col([dcc.Graph(id='percent-change-graph')])
+        ])
     ])
     return layout
-

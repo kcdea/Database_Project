@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 import data
 from query import query
 from navbar import navbar
@@ -26,28 +27,27 @@ def currency_correlation_page():
     currency_options = data.COUNTRY_CURRENCIES + data.CURRENCIES
     layout = html.Div([
         navbar(),
-        html.Div([
-            html.H6('Currency 1:'),
-            dcc.Dropdown(
-                id='currency-coef-currency1',
-                options=[{'label': i, 'value': i} for i in data.CURRENCIES],
-                value='BTC'
-            ),
-            html.H6('Currency 2:'),
-            dcc.Dropdown(
-                id='currency-coef-currency2',
-                options=[{'label': i, 'value': i} for i in currency_options],
-                value='GBP',
-            )
-            ],
-            style={'display': 'inline-block', 'width': '25%'}),
-        html.Div([
-            html.H4(id='coef'),
-            html.H6('Currency 1:'),
-            dcc.Graph(id='currency-coef-graph-1'),
-            html.H6('Currency 1:'),
-            dcc.Graph(id='currency-coef-graph-2'),
-        ],
-            style={'display': 'inline-block', 'width': '70%'})
+        dbc.Row([
+            dbc.Col([
+                html.H6('Currency 1:'),
+                dcc.Dropdown(
+                    id='currency-coef-currency1',
+                    options=[{'label': i, 'value': i} for i in data.CURRENCIES],
+                    value='BTC'
+                ),
+                html.H6('Currency 2:'),
+                dcc.Dropdown(
+                    id='currency-coef-currency2',
+                    options=[{'label': i, 'value': i} for i in currency_options],
+                    value='GBP',
+                )], md=4),
+            dbc.Col([
+                html.H4(id='coef'),
+                html.H6('Currency 1:'),
+                dcc.Graph(id='currency-coef-graph-1'),
+                html.H6('Currency 2:'),
+                dcc.Graph(id='currency-coef-graph-2')
+            ], md=8)
+        ])
     ])
     return layout
