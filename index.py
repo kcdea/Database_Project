@@ -13,6 +13,8 @@ from info_page import info_page
 from percentChange import percentChangePage, percentChange
 from currency_stability import currency_stability_page
 from coinVSInstability import coinVSInstability
+from correlation_coef import correlationCoef, currency_correlation_page
+import data
 from query import query
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA])
@@ -23,6 +25,56 @@ app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
+
+
+@app.callback(
+    Output('coef', 'children'),
+    Output('currency-coef-graph-1', 'figure'),
+    Output('currency-coef-graph-2', 'figure'),
+    [Input('currency-coef-currency1', 'value'),
+     Input('currency-coef-currency2', 'value')])
+def currency_coefficient(c1, c2):
+    if not c1 or not c2:
+        raise PreventUpdate
+
+    both_crypto = False
+    if c2 in data.CURRENCIES:
+        both_crypto = True
+
+    dff = correlationCoef(c1, c2, both_crypto)
+    result = 'Correlation Coefficient: {}'.format(dff['CorrelationCoefficient'][0])
+
+    dff_1 = query("SELECT DATE_TXT, OPEN FROM DMIX.{} "
+                  "WHERE TO_CHAR(DMIX.BTC.DATE_TXT, 'HH24') = 1 ORDER BY DATE_TXT ASC".format(c1),
+                  ['Date', 'Price'])
+
+    if both_crypto:
+        dff_2 = query("SELECT DATE_TXT, OPEN FROM DMIX.{} "
+                      "WHERE TO_CHAR(DMIX.BTC.DATE_TXT, 'HH24') = 1 ORDER BY DATE_TXT ASC".format(c2),
+                      ['Date', 'Price'])
+    else:
+        dff_2 = query('SELECT DATE_TXT, {} FROM DMIX.EXCHANGERATES ORDER BY DATE_TXT ASC'.format(c2), ['Date', 'Price'])
+
+    fig_1 = go.Figure(go.Scatter(
+        x=dff_1['Date'],
+        y=dff_1['Price'],
+        mode='lines'))
+    fig_2 = go.Figure(go.Scatter(
+        x=dff_2['Date'],
+        y=dff_2['Price'],
+        mode='lines'))
+
+    fig_1.update_layout(
+        xaxis={'title': 'Date'},
+        yaxis={'title': 'Price Percent Change'}
+    )
+    fig_1.update_layout(
+        xaxis={'title': 'Date'},
+        yaxis={'title': 'Price Percent Change'}
+    )
+
+    return result, fig_1, fig_2
+
 
 @app.callback(
     Output('currency-stability-graph', 'figure'),
@@ -107,6 +159,8 @@ def display_page(pathname):
         return percentChangePage()
     elif pathname == '/currency_stability':
         return currency_stability_page()
+    elif pathname == '/currency_correlation':
+        return currency_correlation_page()
     else:
         return home_page()
 
