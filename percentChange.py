@@ -10,27 +10,33 @@ import data
 from navbar import navbar
 
 
-def percentChange(currencies, startDate=datetime.date(2012, 1, 1), endDate=datetime.date.today()):
+def percentChange(currency1, currency2, startDate=datetime.date(2012, 1, 1), endDate=datetime.date.today()):
     start = dateToTimestamp(startDate)
     end = dateToTimestamp(endDate)
-
+    currencies = [currency1, currency2]
+    
     queryStr = 'SELECT DMIX.{0}.DATE_TXT, '.format(currencies[0])
-    position = 0
-    while position < len(currencies):
-        if position != 0:
-            queryStr = queryStr + ', '
-        queryStr = queryStr + '((DMIX.{0}.CLOSE - DMIX.{0}.OPEN) / DMIX.{0}.OPEN)'.format(currencies[position])
-        position = position + 1;
-    position = 0
-    queryStr = queryStr + ' FROM '
-    while position < len(currencies):
-        if position == 0:
-            queryStr = queryStr + "DMIX." + currencies[position]
-        else:
-            queryStr = queryStr + ' INNER JOIN DMIX.{1} ON DMIX.{0}.DATE_TXT = DMIX.{1}.DATE_TXT'.format(currencies[0],
-                                                                                                         currencies[
-                                                                                                             position])
-        position = position + 1
+    if currency1 == currency2:
+        queryStr = queryStr + '((DMIX.{0}.CLOSE - DMIX.{0}.OPEN) / DMIX.{0}.OPEN), '.format(currency1)
+        queryStr = queryStr + '((DMIX.{0}.CLOSE - DMIX.{0}.OPEN) / DMIX.{0}.OPEN) AS COPYOF{0}'.format(currency1)
+        queryStr = queryStr + ' FROM DMIX.{0}'.format(currency1)
+    else:
+        position = 0
+        while position < len(currencies):
+            if position != 0:
+                queryStr = queryStr + ', '
+            queryStr = queryStr + '((DMIX.{0}.CLOSE - DMIX.{0}.OPEN) / DMIX.{0}.OPEN)'.format(currencies[position])
+            position = position + 1;
+        position = 0
+        queryStr = queryStr + ' FROM '
+        while position < len(currencies):
+            if position == 0:
+                queryStr = queryStr + "DMIX." + currencies[position]
+            else:
+                queryStr = queryStr + ' INNER JOIN DMIX.{1} ON DMIX.{0}.DATE_TXT = DMIX.{1}.DATE_TXT'.format(currencies[0],
+                                                                                                             currencies[
+                                                                                                                 position])
+            position = position + 1
     queryStr = queryStr + " WHERE {0}.DATE_TXT >= TO_DATE('{1}-{2}-{3}', 'MM-DD-YYYY')".format(currencies[0], str(startDate.month).rjust(2, '0'), str(startDate.day).rjust(2, '0'), str(startDate.year).rjust(4, '0'))
     queryStr = queryStr + " AND {0}.DATE_TXT <= TO_DATE('{1}-{2}-{3}', 'MM-DD-YYYY')".format(currencies[0], str(endDate.month).rjust(2, '0'), str(endDate.day).rjust(2, '0'), str(endDate.year).rjust(4, '0'))
     for currency in currencies:
@@ -38,7 +44,10 @@ def percentChange(currencies, startDate=datetime.date(2012, 1, 1), endDate=datet
     queryStr = queryStr + ' ORDER BY DMIX.{0}.DATE_TXT ASC'.format(currencies[0])
 
     headers = currencies
+    if currency1 == currency2:
+        headers[1] = 'Copy of ' + headers[1]
     headers.insert(0, "datetime")
+    print(queryStr)
     return query(queryStr, headers)
 
 
@@ -48,10 +57,16 @@ def percentChangePage():
         dbc.Row([
             dbc.Col([html.H6('Crypto-Currencies:'),
                     dcc.Dropdown(
-                        id='percent-change-currencies',
+                        id='percent-change-currency-1',
                         options=[{'label': i, 'value': i} for i in data.CURRENCIES],
-                        value=['BTC', 'DASH'],
-                        multi=True
+                        value='BTC',
+                        multi=False
+                    ),
+                    dcc.Dropdown(
+                        id='percent-change-currency-2',
+                        options=[{'label': i, 'value': i} for i in data.CURRENCIES],
+                        value='ETH',
+                        multi=False
                     ),
                     html.Div([
                         html.Div([

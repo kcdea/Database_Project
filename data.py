@@ -11,5 +11,5 @@ COUNTRY_CURRENCIES = ['DZD', 'AUD', 'BWP', 'BRL', 'BND', 'CAD', 'CLP', 'CNY', 'C
                       'GBP', 'USD', 'UYU']
 
 MIN_DATE = datetime.date(2015, 10, 8)
-DEFAULT_DATE = datetime.date(2020, 1, 1)
+DEFAULT_DATE = datetime.date(2019, 1, 1)
 MAX_DATE = datetime.date(2021, 4, 6)

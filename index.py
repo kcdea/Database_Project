@@ -182,35 +182,43 @@ def currency_stability(currencies, countries, start_date, end_date):
 
 @app.callback(
     Output('percent-change-graph', 'figure'),
-    [Input('percent-change-currencies', 'value'),
+    [Input('percent-change-currency-1', 'value'),
+     Input('percent-change-currency-2', 'value'),
      Input('percent-change-start', 'date'),
      Input('percent-change-end', 'date')])
-def percent_change(currencies, start_date, end_date):
+def percent_change(currency1, currency2, start_date, end_date):
     # Do not update if there is an empty input
-    if not currencies or not start_date or not end_date:
+    if not currency1 or not currency2 or not start_date or not end_date:
         raise PreventUpdate
     # Ensure currencies is list
-    if type(currencies) is not list:
-        currencies = [currencies]
+    #if type(currencies) is not list:
+    #    currencies = [currencies]
 
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
-    dff = percentChange(currencies.copy(), start_date, end_date)
+    dff = percentChange(currency1, currency2, start_date, end_date)
 
     fig = go.Figure()
-
-    for i in currencies:
-        fig.add_trace(go.Scatter(
-            x=dff['datetime'],
-            y=dff[i],
-            mode='lines',
-            name=i,
-        ))
+    
+    if currency1 == currency2:
+        currency2Label = 'Copy of ' + currency1
+    else:
+        currency2Label = currency2
+    
+    fig.add_trace(go.Scatter(
+        x=dff[currency1],
+        y=dff[currency2Label],
+        #trendline = 'ols',
+        name=currency1 + ' vs ' + currency2,
+        text = dff['datetime'],
+        hovertemplate = '(%{x}, %{y}) @ %{text}',
+        mode = 'markers'
+    ))
 
     fig.update_layout(
-        xaxis={'title': 'Date'},
-        yaxis={'title': 'Price Percent Change'}
+        xaxis={'title': 'Price Percent Change - ' + currency1},
+        yaxis={'title': 'Price Percent Change - ' + currency2}
     )
 
     return fig
