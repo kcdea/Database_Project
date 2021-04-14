@@ -39,7 +39,7 @@ def coinVSInstability(currencies, countries, startDate=datetime.date(2012, 1, 1)
         currencyIt = currencyIt + 1
     queryStr = queryStr + "FROM DMIX.ECONOMICINSTABILITY"
     for currency in currencies:
-        queryStr = queryStr + " INNER JOIN {0}AVG ON DMIX.ECONOMICINSTABILITY.MONTH = EXTRACT(MONTH FROM {0}AVG.MONTH) AND DMIX.ECONOMICINSTABILITY.YEAR = EXTRACT(YEAR FROM {0}AVG.MONTH);".format(currency)
+        queryStr = queryStr + " INNER JOIN {0}AVG ON DMIX.ECONOMICINSTABILITY.MONTH = EXTRACT(MONTH FROM {0}AVG.MONTH) AND DMIX.ECONOMICINSTABILITY.YEAR = EXTRACT(YEAR FROM {0}AVG.MONTH)".format(currency)
     
     headers = countries
     headers.append("month")

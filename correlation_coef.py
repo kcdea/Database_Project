@@ -13,7 +13,10 @@ from navbar import navbar
 def correlationCoef(currency1, currency2, crypto):
     queryStr = ""
     if (crypto):
-        queryStr = "SELECT CORR(DMIX." + currency1 + ".open, DMIX." + currency2 + ".open) FROM DMIX." + currency1 + " JOIN DMIX." + currency2 + " ON DMIX." + currency1 + ".timestamp = DMIX." + currency2 + ".timestamp"
+        if currency1 == currency2:
+            queryStr = "SELECT CORR(DMIX.{0}.OPEN, DMIX.{0}.OPEN) FROM DMIX.{0}".format(currency1)
+        else:
+            queryStr = "SELECT CORR(DMIX." + currency1 + ".open, DMIX." + currency2 + ".open) FROM DMIX." + currency1 + " JOIN DMIX." + currency2 + " ON DMIX." + currency1 + ".timestamp = DMIX." + currency2 + ".timestamp"
     else:
         queryStr = "SELECT CORR(crypto_price, " + currency2 + ") FROM DMIX.EXCHANGERATES NATURAL JOIN (SELECT date_txt, AVG(DMIX." + currency1 + ".open) AS crypto_price FROM DMIX." + currency1 + " GROUP BY date_txt)"
     title = 'CorrelationCoefficient'
@@ -24,7 +27,9 @@ def correlationCoef(currency1, currency2, crypto):
 # returns correlation coefficient (scalar value) between currency1 and currency2
 
 def currency_correlation_page():
-    currency_options = data.COUNTRY_CURRENCIES + data.CURRENCIES
+    sortedCurrencies = data.COUNTRY_CURRENCIES
+    sortedCurrencies.sort()
+    currency_options = sortedCurrencies + data.CURRENCIES
     layout = html.Div([
         navbar(),
         dbc.Row([

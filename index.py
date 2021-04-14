@@ -39,12 +39,12 @@ app.layout = html.Div([
 
 
 @app.callback(
-    Output('volatility-12-hours-graph', 'figure'),
-    Output('volatility-all-time-graph', 'figure'),
+    Output('volatility-graph', 'figure'),
     [Input('volatility-currency', 'value'),
      Input('volatility-start', 'date'),
-     Input('volatility-end', 'date')])
-def volatility_disp(currency, start_date, end_date):
+     Input('volatility-end', 'date'),
+     Input('toggle', 'value')])
+def volatility_disp(currency, start_date, end_date, option):
     if not currency or not start_date or not end_date:
         raise PreventUpdate
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -53,26 +53,26 @@ def volatility_disp(currency, start_date, end_date):
     dff = volatility(currency, start_date, end_date)
 
     print(dff)
+    print(option)
 
-    fig_12_hours = go.Figure()
+    fig_volatility = go.Figure()
+    
+    if option == 'last 12 hours':
+        for i in ["actualPrice", "twelveHour", "twelveHourPlus", "twelveHourMinus", "twelveHourPlusPlus", "twelveHourMinusMinus"]:
+            fig_volatility.add_trace(go.Scatter(
+                x=dff['datetime'],
+                y=dff[i],
+                mode='lines'
+            ))
+    else:
+        for i in ["actualPrice", "allTime", "allTimePlus", "allTimeMinus", "allTimePlusPlus", "allTimeMinusMinus"]:
+            fig_volatility.add_trace(go.Scatter(
+                x=dff['datetime'],
+                y=dff[i],
+                mode='lines'
+            ))
 
-    for i in ["actualPrice", "twelveHour", "twelveHourPlus", "twelveHourMinus", "twelveHourPlusPlus", "twelveHourMinusMinus", ]:
-        fig_12_hours.add_trace(go.Scatter(
-            x=dff['datetime'],
-            y=dff[i],
-            mode='lines'
-        ))
-
-    fig_all_time = go.Figure()
-
-    for i in ["actualPrice", "allTime", "allTimePlus", "allTimeMinus", "allTimePlusPlus", "allTimeMinusMinus"]:
-        fig_all_time.add_trace(go.Scatter(
-            x=dff['datetime'],
-            y=dff[i],
-            mode='lines'
-        ))
-
-    return fig_12_hours, fig_all_time
+    return fig_volatility
 
 
 @app.callback(
